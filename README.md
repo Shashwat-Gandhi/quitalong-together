@@ -2,19 +2,29 @@
 
 A competitive quit-smoking dashboard for two friends. Log daily cigarettes, track smoke-free streaks, and compete head-to-head.
 
+## Live app
+
+**https://quitalong-together.onrender.com**
+
 ## Stack
 
 - **Frontend:** React + Vite + Tailwind CSS
 - **Backend:** Node.js + Express
-- **Database:** PostgreSQL
-- **Deploy:** Heroku
+- **Database:** PostgreSQL (Neon — free tier)
+- **Hosting:** Render — free web service
+
+## Cost
+
+- **Neon:** $0 (free tier, scales to zero when idle)
+- **Render:** $0 (free tier, sleeps after 15 min inactivity)
+- **Total:** $0/month for light personal use
 
 ## Local Setup
 
 ### Prerequisites
 
 - Node.js 18+
-- PostgreSQL
+- PostgreSQL (or a free Neon database URL)
 
 ### 1. Install dependencies
 
@@ -58,22 +68,36 @@ npm run dev
 3. Both users log cigarettes daily on **Log Today** or from the dashboard.
 4. Compete on current streak, longest streak, and monthly totals.
 
-## Deploy to Heroku
+## Deploy (Neon + Render)
+
+### 1. Neon database (free)
+
+1. Sign up at [neon.tech](https://neon.tech)
+2. Create a project and copy the **connection string**
+3. Run migrations locally:
 
 ```bash
-heroku login
-heroku create your-app-name
-heroku addons:create heroku-postgresql:essential-0
-heroku config:set JWT_SECRET=your-long-random-secret
-heroku config:set NODE_ENV=production
-git push heroku main
+DATABASE_URL="your-neon-connection-string" npm run migrate
 ```
 
-Heroku runs `heroku-postbuild` to build the React client. The Express server serves the built app and API from a single dyno.
+### 2. Render web service (free)
 
-### Post-deploy
+1. Push this repo to GitHub
+2. Sign up at [render.com](https://render.com) and connect GitHub
+3. Create a **Web Service** from the repo (or use the included `render.yaml` blueprint)
+4. Set environment variables:
 
-Open the app, create two accounts (first without invite code, second with invite code), and start logging.
+| Key | Value |
+|-----|-------|
+| `NODE_ENV` | `production` |
+| `DATABASE_URL` | Your Neon connection string |
+| `JWT_SECRET` | A long random string |
+
+5. Build command: `npm install && npm run render-build`
+6. Start command: `npm start`
+7. Plan: **Free**
+
+Render auto-deploys on every push to `main`.
 
 ## API Overview
 
