@@ -26,7 +26,8 @@ router.get('/today', requireAuth, async (req, res) => {
     const memberIds = await getPairMemberIds(user.pair_id);
 
     const logsResult = await query(
-      `SELECT dl.user_id, dl.log_date, dl.cigarettes, u.display_name, u.accent_color
+      `SELECT dl.user_id, dl.log_date, dl.cigarettes, dl.updated_at,
+              u.display_name, u.accent_color
        FROM daily_logs dl
        JOIN users u ON u.id = dl.user_id
        WHERE dl.user_id = ANY($1) AND dl.log_date = $2`,
@@ -39,6 +40,7 @@ router.get('/today', requireAuth, async (req, res) => {
       accentColor: r.accent_color,
       cigarettes: r.cigarettes,
       logDate: r.log_date,
+      updatedAt: r.updated_at,
       isCurrentUser: r.user_id === req.userId,
     }));
 
@@ -69,7 +71,7 @@ router.put('/today', requireAuth, async (req, res) => {
        VALUES ($1, $2, $3)
        ON CONFLICT (user_id, log_date)
        DO UPDATE SET cigarettes = $3, updated_at = NOW()
-       RETURNING user_id, log_date, cigarettes`,
+       RETURNING user_id, log_date, cigarettes, updated_at`,
       [req.userId, today, cigarettes]
     );
 
@@ -79,6 +81,7 @@ router.put('/today', requireAuth, async (req, res) => {
         userId: log.user_id,
         logDate: log.log_date,
         cigarettes: log.cigarettes,
+        updatedAt: log.updated_at,
       },
     });
   } catch (err) {

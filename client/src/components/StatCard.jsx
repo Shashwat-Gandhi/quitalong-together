@@ -1,9 +1,15 @@
-export default function StatCard({ title, children, className = '' }) {
+export default function StatCard({ title, children, className = '', noPadding = false }) {
   return (
-    <div className={`bg-white rounded-2xl shadow-sm border border-slate-100 p-5 ${className}`}>
-      <h3 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-4">
-        {title}
-      </h3>
+    <div
+      className={`bg-white rounded-2xl shadow-card border border-slate-100/80 ${
+        noPadding ? '' : 'p-5'
+      } ${className}`}
+    >
+      {title && (
+        <h3 className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4">
+          {title}
+        </h3>
+      )}
       {children}
     </div>
   );

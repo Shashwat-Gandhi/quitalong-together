@@ -34,7 +34,14 @@ export default function Stats() {
 
   return (
     <div>
-      <PageHeader subtitle="Head-to-head comparison with your friend." />
+      <div className="hidden lg:block">
+        <PageHeader subtitle="Head-to-head comparison with your friend." />
+      </div>
+
+      <div className="lg:hidden mb-4">
+        <h2 className="text-xl font-bold text-slate-900">Stats</h2>
+        <p className="text-sm text-slate-500">Head-to-head with your friend</p>
+      </div>
 
       {users.length < 2 && (
         <div className="mb-4 bg-amber-50 text-amber-700 text-sm px-4 py-3 rounded-xl">

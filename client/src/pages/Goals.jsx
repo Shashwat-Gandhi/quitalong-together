@@ -73,7 +73,13 @@ export default function Goals() {
 
   return (
     <div>
-      <PageHeader subtitle="Shared goals to keep you both motivated." />
+      <div className="hidden lg:block">
+        <PageHeader subtitle="Shared goals to keep you both motivated." />
+      </div>
+      <div className="lg:hidden mb-4">
+        <h2 className="text-xl font-bold text-slate-900">Goals</h2>
+        <p className="text-sm text-slate-500">Shared milestones to hit together</p>
+      </div>
 
       <div className="space-y-4">
         {GOALS.map((goal) => (

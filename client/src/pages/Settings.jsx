@@ -44,7 +44,13 @@ export default function Settings() {
 
   return (
     <div>
-      <PageHeader subtitle="Manage your profile and account." />
+      <div className="hidden lg:block">
+        <PageHeader subtitle="Manage your profile and account." />
+      </div>
+      <div className="lg:hidden mb-4">
+        <h2 className="text-xl font-bold text-slate-900">Settings</h2>
+        <p className="text-sm text-slate-500">Profile and account</p>
+      </div>
 
       <div className="space-y-4 max-w-lg">
         <StatCard title="Profile">

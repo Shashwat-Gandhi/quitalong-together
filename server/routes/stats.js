@@ -58,7 +58,7 @@ router.get('/dashboard', requireAuth, async (req, res) => {
 
     const monthStart = getMonthStart(today);
     const logsResult = await query(
-      `SELECT user_id, log_date, cigarettes
+      `SELECT user_id, log_date, cigarettes, updated_at
        FROM daily_logs
        WHERE user_id = ANY($1) AND log_date <= $2`,
       [memberIds, today]
@@ -88,6 +88,7 @@ router.get('/dashboard', requireAuth, async (req, res) => {
         monthTotal: stats.monthTotal,
         todayCigarettes: todayLog ? todayLog.cigarettes : null,
         hasLoggedToday: !!todayLog,
+        lastUpdatedAt: todayLog?.updated_at || null,
         statusMessage: pickStatus(index + stats.currentStreak),
       };
     });

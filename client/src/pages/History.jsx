@@ -3,6 +3,14 @@ import { api } from '../api/client';
 import PageHeader from '../components/PageHeader';
 import StatCard from '../components/StatCard';
 
+function formatTime(isoString) {
+  if (!isoString) return null;
+  return new Date(isoString).toLocaleTimeString('en-US', {
+    hour: 'numeric',
+    minute: '2-digit',
+  });
+}
+
 export default function History() {
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -25,12 +33,19 @@ export default function History() {
   const dates = Object.keys(grouped).sort((a, b) => b.localeCompare(a));
 
   if (loading) {
-    return <div className="animate-pulse text-slate-500">Loading history...</div>;
+    return <div className="animate-pulse text-slate-500 py-8 text-center">Loading history...</div>;
   }
 
   return (
     <div>
-      <PageHeader subtitle="Review your daily smoking logs." />
+      <div className="hidden lg:block">
+        <PageHeader subtitle="Review your daily smoking logs." />
+      </div>
+
+      <div className="lg:hidden mb-4">
+        <h2 className="text-xl font-bold text-slate-900">History</h2>
+        <p className="text-sm text-slate-500">Your daily logs with timestamps</p>
+      </div>
 
       {error && (
         <div className="mb-4 bg-red-50 text-red-600 text-sm px-4 py-3 rounded-xl">{error}</div>
@@ -41,36 +56,41 @@ export default function History() {
           <p className="text-slate-500 text-sm">Start logging on the Log Today page.</p>
         </StatCard>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-3">
           {dates.map((date) => (
-            <StatCard key={date} title={new Date(date + 'T12:00:00').toLocaleDateString('en-US', {
-              weekday: 'short',
-              month: 'short',
-              day: 'numeric',
-              year: 'numeric',
-            })}>
+            <StatCard
+              key={date}
+              title={new Date(date + 'T12:00:00').toLocaleDateString('en-US', {
+                weekday: 'short',
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric',
+              })}
+            >
               <div className="space-y-2">
                 {grouped[date].map((log) => (
                   <div
                     key={`${log.userId}-${date}`}
-                    className="flex items-center justify-between py-2 border-b border-slate-50 last:border-0"
+                    className="flex items-center justify-between py-3 pl-3 border-b border-slate-50 last:border-0 border-l-[3px]"
+                    style={{ borderLeftColor: log.accentColor }}
                   >
-                    <div className="flex items-center gap-2">
-                      <div
-                        className="w-3 h-3 rounded-full"
-                        style={{ backgroundColor: log.accentColor }}
-                      />
-                      <span className="font-medium text-slate-700">
+                    <div className="min-w-0">
+                      <span className="font-semibold text-slate-800 block truncate">
                         {log.displayName}
                         {log.isCurrentUser && ' (you)'}
                       </span>
+                      {log.updatedAt && (
+                        <span className="text-xs text-slate-500">
+                          Saved at {formatTime(log.updatedAt)}
+                        </span>
+                      )}
                     </div>
                     <span
-                      className={`font-semibold ${
+                      className={`font-bold text-base shrink-0 ml-3 ${
                         log.cigarettes === 0 ? 'text-userGreen' : 'text-slate-700'
                       }`}
                     >
-                      {log.cigarettes === 0 ? 'Smoke-free' : `${log.cigarettes} cigarettes`}
+                      {log.cigarettes === 0 ? 'Smoke-free' : `${log.cigarettes}`}
                     </span>
                   </div>
                 ))}

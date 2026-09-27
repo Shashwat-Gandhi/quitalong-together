@@ -1,4 +1,4 @@
-import { NavLink, Outlet, useLocation } from 'react-router-dom';
+import { NavLink, Outlet } from 'react-router-dom';
 import {
   LayoutDashboard,
   PenLine,
@@ -9,6 +9,7 @@ import {
   Leaf,
 } from 'lucide-react';
 import BottomNav from './BottomNav';
+import MobileHeader from './MobileHeader';
 
 const navItems = [
   { to: '/', icon: LayoutDashboard, label: 'Dashboard' },
@@ -20,10 +21,8 @@ const navItems = [
 ];
 
 export default function AppShell() {
-  const location = useLocation();
-
   return (
-    <div className="min-h-screen bg-slate-50 lg:flex">
+    <div className="min-h-screen bg-page lg:flex">
       <aside className="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 bg-navy text-white">
         <div className="flex items-center gap-2 px-6 py-5 border-b border-white/10">
           <Leaf className="w-7 h-7 text-userGreen" />
@@ -50,13 +49,14 @@ export default function AppShell() {
         </nav>
       </aside>
 
-      <div className="flex-1 lg:ml-64 pb-20 lg:pb-0">
-        <main className="max-w-6xl mx-auto px-4 py-6 lg:px-8 lg:py-8">
+      <div className="flex-1 lg:ml-64 pb-nav-safe lg:pb-0">
+        <main className="max-w-6xl mx-auto px-4 py-4 lg:px-8 lg:py-8">
+          <MobileHeader />
           <Outlet />
         </main>
       </div>
 
-      <BottomNav currentPath={location.pathname} />
+      <BottomNav />
     </div>
   );
 }
