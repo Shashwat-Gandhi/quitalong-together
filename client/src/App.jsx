@@ -4,6 +4,7 @@ import ProtectedRoute from './components/ProtectedRoute';
 import AppShell from './components/layout/AppShell';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
+import ForgotPassword from './pages/ForgotPassword';
 import Dashboard from './pages/Dashboard';
 import LogToday from './pages/LogToday';
 import History from './pages/History';
@@ -34,6 +35,14 @@ export default function App() {
         element={
           <PublicRoute>
             <Signup />
+          </PublicRoute>
+        }
+      />
+      <Route
+        path="/forgot-password"
+        element={
+          <PublicRoute>
+            <ForgotPassword />
           </PublicRoute>
         }
       />

@@ -22,7 +22,7 @@ const navItems = [
 
 export default function AppShell() {
   return (
-    <div className="min-h-screen bg-page lg:flex">
+    <div className="min-h-screen bg-slate-100 lg:flex">
       <aside className="hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0 bg-navy text-white">
         <div className="flex items-center gap-2 px-6 py-5 border-b border-white/10">
           <Leaf className="w-7 h-7 text-userGreen" />

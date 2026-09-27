@@ -20,6 +20,8 @@ async function request(path, options = {}) {
 export const api = {
   signup: (body) => request('/api/auth/signup', { method: 'POST', body: JSON.stringify(body) }),
   login: (body) => request('/api/auth/login', { method: 'POST', body: JSON.stringify(body) }),
+  resetPassword: (body) =>
+    request('/api/auth/reset-password', { method: 'POST', body: JSON.stringify(body) }),
   logout: () => request('/api/auth/logout', { method: 'POST' }),
   me: () => request('/api/auth/me'),
   getInvite: () => request('/api/pair/invite'),

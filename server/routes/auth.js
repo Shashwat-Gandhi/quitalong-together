@@ -8,6 +8,8 @@ import { setAuthCookie, clearAuthCookie } from '../middleware/authCookie.js';
 
 const router = Router();
 
+const PROTECTED_RESET_EMAIL = (process.env.PROTECTED_RESET_EMAIL || 'shashwatgandhi88@gmail.com').toLowerCase();
+
 function signToken(userId) {
   return jwt.sign({ userId }, process.env.JWT_SECRET, { expiresIn: '7d' });
 }
@@ -158,6 +160,39 @@ router.post('/login', async (req, res) => {
   } catch (err) {
     console.error('Login error:', err);
     return res.status(500).json({ error: 'Failed to log in' });
+  }
+});
+
+router.post('/reset-password', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Email and new password are required' });
+    }
+
+    if (password.length < 6) {
+      return res.status(400).json({ error: 'Password must be at least 6 characters' });
+    }
+
+    const normalizedEmail = email.toLowerCase();
+
+    if (normalizedEmail === PROTECTED_RESET_EMAIL) {
+      return res.status(403).json({ error: 'Password reset is not available for this account' });
+    }
+
+    const existing = await query('SELECT id FROM users WHERE email = $1', [normalizedEmail]);
+    if (existing.rows.length === 0) {
+      return res.status(404).json({ error: 'No account found with this email' });
+    }
+
+    const passwordHash = await bcrypt.hash(password, 12);
+    await query('UPDATE users SET password_hash = $1 WHERE email = $2', [passwordHash, normalizedEmail]);
+
+    return res.json({ ok: true, message: 'Password updated. You can sign in now.' });
+  } catch (err) {
+    console.error('Reset password error:', err);
+    return res.status(500).json({ error: 'Failed to reset password' });
   }
 });
 
