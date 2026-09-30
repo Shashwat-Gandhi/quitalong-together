@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { LogOut, Copy, Check } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { api } from '../api/client';
 import PageHeader from '../components/PageHeader';
@@ -85,6 +85,20 @@ export default function Settings() {
             </button>
           </form>
         </StatCard>
+
+        {user?.isAdmin && (
+          <StatCard title="Admin">
+            <p className="text-sm text-slate-600 mb-3">
+              Add, edit, or delete logs for any user on any date.
+            </p>
+            <Link
+              to="/admin/logs"
+              className="inline-flex items-center rounded-xl bg-navy px-4 py-2.5 text-sm font-semibold text-white"
+            >
+              Manage logs
+            </Link>
+          </StatCard>
+        )}
 
         {user?.inviteCode && !user?.pairComplete && (
           <StatCard title="Invite Code">

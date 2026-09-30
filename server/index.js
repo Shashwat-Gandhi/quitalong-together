@@ -53,6 +53,18 @@ async function runMigrations() {
   const schemaPath = path.join(__dirname, 'db', 'schema.sql');
   const schema = fs.readFileSync(schemaPath, 'utf8');
   await pool.query(schema);
+
+  const { rows } = await pool.query('SELECT COUNT(*)::int AS count FROM log_events');
+  if (rows[0].count === 0) {
+    const daily = await pool.query('SELECT COUNT(*)::int AS count FROM daily_logs');
+    if (daily.rows[0].count > 0) {
+      await pool.query(
+        `INSERT INTO log_events (user_id, log_date, cigarettes, created_at)
+         SELECT user_id, log_date, cigarettes, updated_at FROM daily_logs`
+      );
+      console.log('Migrated daily_logs to log_events');
+    }
+  }
 }
 
 async function start() {

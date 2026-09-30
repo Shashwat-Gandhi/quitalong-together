@@ -24,7 +24,7 @@ function buildLogMap(logs) {
     const key = typeof log.log_date === 'string'
       ? log.log_date.slice(0, 10)
       : toDateKey(new Date(log.log_date));
-    map.set(key, log.cigarettes);
+    map.set(key, (map.get(key) || 0) + log.cigarettes);
   }
   return map;
 }

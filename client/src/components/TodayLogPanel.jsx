@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import LogCounter from './LogCounter';
 import StatCard from './StatCard';
@@ -19,34 +19,21 @@ export default function TodayLogPanel({
   showViewAllLink = true,
   embedded = false,
 }) {
-  const [counts, setCounts] = useState(() => {
-    const map = {};
-    users?.forEach((u) => {
-      map[u.id] = u.todayCigarettes ?? 0;
-    });
-    return map;
-  });
-
-  useEffect(() => {
-    const map = {};
-    users?.forEach((u) => {
-      map[u.id] = u.todayCigarettes ?? 0;
-    });
-    setCounts(map);
-  }, [users]);
+  const [count, setCount] = useState(0);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState('');
 
   const myUser = users?.find((u) => u.isCurrentUser);
-  const myCount = myUser ? counts[myUser.id] ?? 0 : 0;
+  const myTotal = myUser?.todayCigarettes ?? 0;
 
   const handleSave = async () => {
     if (!myUser) return;
     setSaving(true);
     setError('');
     try {
-      await onSave(myCount);
+      await onSave(count);
+      setCount(0);
       setSaved(true);
       setTimeout(() => setSaved(false), 2500);
     } catch (err) {
@@ -56,29 +43,36 @@ export default function TodayLogPanel({
     }
   };
 
-  const handleChange = (userId, value) => {
-    setCounts((prev) => ({ ...prev, [userId]: value }));
-  };
-
   const content = (
     <>
       <div className="space-y-4">
         {users?.map((user) => (
-          <LogCounter
-            key={user.id}
-            label={user.displayName + (user.isCurrentUser ? ' (you)' : '')}
-            value={counts[user.id] ?? 0}
-            accentColor={user.accentColor}
-            readOnly={!user.isCurrentUser}
-            large
-            onChange={
-              user.isCurrentUser
-                ? (v) => handleChange(user.id, v)
-                : undefined
-            }
-          />
+          <div key={user.id} className="rounded-xl bg-slate-50 px-4 py-3">
+            <div className="flex items-center justify-between">
+              <span className="font-semibold text-slate-700">
+                {user.displayName}
+                {user.isCurrentUser ? ' (you)' : ''}
+              </span>
+              <span className="text-2xl font-extrabold tabular-nums" style={{ color: user.accentColor }}>
+                {user.todayCigarettes ?? 0}
+              </span>
+            </div>
+            <p className="text-xs text-slate-500 mt-1">Today&apos;s total</p>
+          </div>
         ))}
       </div>
+
+      {myUser && (
+        <div className="mt-4">
+          <LogCounter
+            label="Log now"
+            value={count}
+            accentColor={myUser.accentColor}
+            large
+            onChange={setCount}
+          />
+        </div>
+      )}
 
       {error && (
         <p className="text-red-500 text-sm mt-3 text-center">{error}</p>
@@ -90,18 +84,18 @@ export default function TodayLogPanel({
         disabled={saving || !myUser}
         className="w-full mt-5 py-4 bg-userGreen text-white font-bold rounded-2xl active:bg-green-600 transition-colors disabled:opacity-50 text-base shadow-md min-h-touch"
       >
-        {saving ? 'Saving...' : saved ? 'Saved!' : "Save Today's Log"}
+        {saving ? 'Saving...' : saved ? 'Logged!' : 'Log Cigarettes'}
       </button>
 
       {lastUpdatedAt && (
         <p className="text-center text-xs text-slate-500 mt-2">
-          Last saved at {formatTime(lastUpdatedAt)}
+          Last logged at {formatTime(lastUpdatedAt)}
         </p>
       )}
 
-      {myCount === 0 && myUser && (
+      {myTotal === 0 && myUser?.hasLoggedToday && (
         <p className="text-center text-sm text-userGreen mt-2 font-semibold">
-          Smoke-free day!
+          Smoke-free day so far!
         </p>
       )}
 

@@ -28,7 +28,7 @@ export const api = {
   getMembers: () => request('/api/pair/members'),
   getTodayLogs: () => request('/api/logs/today'),
   saveTodayLog: (cigarettes) =>
-    request('/api/logs/today', { method: 'PUT', body: JSON.stringify({ cigarettes }) }),
+    request('/api/logs/today', { method: 'POST', body: JSON.stringify({ cigarettes }) }),
   getLogs: (from, to) => {
     const params = new URLSearchParams();
     if (from) params.set('from', from);
@@ -36,6 +36,12 @@ export const api = {
     const qs = params.toString();
     return request(`/api/logs${qs ? `?${qs}` : ''}`);
   },
+  getAdminLogs: (date) => request(`/api/logs/admin?date=${encodeURIComponent(date)}`),
+  createLogEvent: (body) =>
+    request('/api/logs/events', { method: 'POST', body: JSON.stringify(body) }),
+  updateLogEvent: (id, body) =>
+    request(`/api/logs/events/${id}`, { method: 'PATCH', body: JSON.stringify(body) }),
+  deleteLogEvent: (id) => request(`/api/logs/events/${id}`, { method: 'DELETE' }),
   getDashboardStats: () => request('/api/stats/dashboard'),
   getSummaryStats: () => request('/api/stats/summary'),
   updateProfile: (displayName) =>

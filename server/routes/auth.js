@@ -5,6 +5,7 @@ import { query } from '../db.js';
 import { generateInviteCode } from '../lib/inviteCode.js';
 import { requireAuth } from '../middleware/requireAuth.js';
 import { setAuthCookie, clearAuthCookie } from '../middleware/authCookie.js';
+import { isAdminEmail } from '../lib/admin.js';
 
 const router = Router();
 
@@ -40,6 +41,7 @@ async function getUserWithPair(userId) {
     isUser1: row.user1_id === row.id,
     pairComplete,
     createdAt: row.created_at,
+    isAdmin: isAdminEmail(row.email),
   };
 }
 

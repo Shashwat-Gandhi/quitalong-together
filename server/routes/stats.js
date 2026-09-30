@@ -7,6 +7,7 @@ import {
   getTodayInTimezone,
   getMonthStart,
 } from '../lib/streakCalculator.js';
+import { eventsToDailyLogs } from '../lib/logEvents.js';
 
 const router = Router();
 
@@ -57,9 +58,9 @@ router.get('/dashboard', requireAuth, async (req, res) => {
     const memberIds = members.map((m) => m.id);
 
     const monthStart = getMonthStart(today);
-    const logsResult = await query(
-      `SELECT user_id, log_date, cigarettes, updated_at
-       FROM daily_logs
+    const eventsResult = await query(
+      `SELECT user_id, log_date, cigarettes, created_at
+       FROM log_events
        WHERE user_id = ANY($1) AND log_date <= $2`,
       [memberIds, today]
     );
@@ -68,7 +69,8 @@ router.get('/dashboard', requireAuth, async (req, res) => {
     for (const m of members) {
       logsByUser[m.id] = [];
     }
-    for (const log of logsResult.rows) {
+    const dailyLogs = eventsToDailyLogs(eventsResult.rows);
+    for (const log of dailyLogs) {
       logsByUser[log.user_id].push(log);
     }
 
@@ -148,14 +150,15 @@ router.get('/summary', requireAuth, async (req, res) => {
     const members = membersResult.rows;
     const memberIds = members.map((m) => m.id);
 
-    const logsResult = await query(
-      `SELECT user_id, log_date, cigarettes FROM daily_logs WHERE user_id = ANY($1)`,
+    const eventsResult = await query(
+      `SELECT user_id, log_date, cigarettes, created_at FROM log_events WHERE user_id = ANY($1)`,
       [memberIds]
     );
 
     const logsByUser = {};
     for (const m of members) logsByUser[m.id] = [];
-    for (const log of logsResult.rows) logsByUser[log.user_id].push(log);
+    const dailyLogs = eventsToDailyLogs(eventsResult.rows);
+    for (const log of dailyLogs) logsByUser[log.user_id].push(log);
 
     const users = members.map((m) => {
       const stats = buildUserStats(logsByUser[m.id], today);

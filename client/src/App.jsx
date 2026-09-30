@@ -11,6 +11,7 @@ import History from './pages/History';
 import Stats from './pages/Stats';
 import Goals from './pages/Goals';
 import Settings from './pages/Settings';
+import AdminLogs from './pages/AdminLogs';
 
 function PublicRoute({ children }) {
   const { user, loading } = useAuth();
@@ -59,6 +60,7 @@ export default function App() {
         <Route path="/stats" element={<Stats />} />
         <Route path="/goals" element={<Goals />} />
         <Route path="/settings" element={<Settings />} />
+        <Route path="/admin/logs" element={<AdminLogs />} />
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
